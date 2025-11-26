@@ -1,9 +1,15 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../database');
+const sequelize = require('../config/database');
 
 const User = sequelize.define(
   'User',
   {
+    id: {
+      type: DataTypes.STRING(255),
+      primaryKey: true,
+      allowNull: false,
+      comment: 'IBM App ID unique identifier (sub)'
+    },
     firstName: {
       type: DataTypes.STRING(100),
       allowNull: false
@@ -14,7 +20,7 @@ const User = sequelize.define(
     },
     email: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       unique: true,
       validate: {
         isEmail: true
@@ -31,10 +37,6 @@ const User = sequelize.define(
     bio: {
       type: DataTypes.TEXT,
       allowNull: true
-    },
-    passwordHash: {
-      type: DataTypes.STRING(255),
-      allowNull: false
     }
   },
   {
