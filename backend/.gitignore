@@ -4,9 +4,6 @@ node_modules/
 # Environment variables
 .env
 
-# IBM App ID configuration (contains secrets)
-localdev-config.json
-
 # SSL Certificates
 *.crt
 *.pem
