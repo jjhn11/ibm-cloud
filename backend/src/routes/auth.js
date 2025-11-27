@@ -10,12 +10,26 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
 /**
  * Login endpoint - redirects to IBM App ID login page
+ * Supports ?sendBackTo query parameter to redirect back after authentication
  */
-router.get('/login', 
-  passport.authenticate(WebAppStrategy.STRATEGY_NAME, {
-    forceLogin: true
-  })
-);
+router.get('/login', (req, res, next) => {
+  // Store return URL in session if provided
+  const sendBackTo = req.query.sendBackTo || '/';
+  
+  console.log('🔵 LOGIN: Received sendBackTo from query:', req.query.sendBackTo);
+  console.log('🔵 LOGIN: Will save sendBackTo as:', sendBackTo);
+  
+  req.session.sendBackTo = sendBackTo;
+  req.session.save((err) => {
+    if (err) {
+      console.error('❌ Error saving sendBackTo in session:', err);
+    } else {
+      console.log('💾 LOGIN: Saved sendBackTo in session:', sendBackTo);
+      console.log('💾 LOGIN: Session ID:', req.sessionID);
+    }
+    next();
+  });
+}, passport.authenticate(WebAppStrategy.STRATEGY_NAME));
 
 /**
  * Middleware to sync App ID user to database
@@ -95,17 +109,51 @@ async function syncUserToDatabase(req, res, next) {
 
 /**
  * Callback endpoint - IBM App ID redirects here after authentication
- * Chain middleware: authenticate -> sync to DB -> redirect
  */
 router.get('/callback', 
+  (req, res, next) => {
+    console.log('🟡 CALLBACK: Session ID:', req.sessionID);
+    console.log('🟡 CALLBACK: sendBackTo in session:', req.session.sendBackTo);
+    next();
+  },
   passport.authenticate(WebAppStrategy.STRATEGY_NAME, { 
     keepSessionInfo: true,
-    failureRedirect: '/auth/failure'
-  }),
+    failureRedirect: '/auth/failure',
+    successRedirect: '/auth/success'
+  })
+);
+
+/**
+ * Success endpoint - handles post-authentication logic
+ */
+router.get('/success',
+  (req, res, next) => {
+    console.log('🟢 SUCCESS: Session ID:', req.sessionID);
+    console.log('🟢 SUCCESS: sendBackTo in session:', req.session.sendBackTo);
+    next();
+  },
   syncUserToDatabase,
   (req, res) => {
-    console.log('🏠 Redirecting to root route');
-    res.redirect('/');
+    console.log('🎯 AUTH SUCCESS HANDLER - FINAL REDIRECT');
+    
+    // Get and clear return URL from session
+    const sendBackTo = req.session.sendBackTo || '/';
+    console.log('🔄 SUCCESS: sendBackTo value:', sendBackTo);
+    
+    delete req.session.sendBackTo;
+    
+    // Save session before redirecting
+    req.session.save((err) => {
+      if (err) {
+        console.error('❌ Error saving session:', err);
+      }
+      
+      const redirectUrl = `${CLIENT_ORIGIN}${sendBackTo}`;
+      console.log('✅ SUCCESS: Final redirect URL:', redirectUrl);
+      
+      // Direct redirect to frontend
+      res.redirect(redirectUrl);
+    });
   }
 );
 

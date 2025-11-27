@@ -4,7 +4,7 @@ const sequelize = require('./database');
 
 const {
   SESSION_SECRET = 'supersecret-change-this',
-  SESSION_SAMESITE = 'lax',
+  SESSION_SAMESITE = 'none', // ✅ CHANGED: Use 'none' for OAuth flows
   SESSION_SECURE = 'false'
 } = process.env;
 
@@ -24,10 +24,11 @@ const sessionConfig = {
   resave: false,
   saveUninitialized: true, // Save session even if unmodified (needed for IBM App ID)
   store: sessionStore,
+  proxy: true, // ✅ ADD THIS - trust proxy for secure cookies
   cookie: {
     httpOnly: true,
     secure: isSecureCookie,
-    sameSite: SESSION_SAMESITE,
+    sameSite: SESSION_SAMESITE === 'none' ? 'lax' : SESSION_SAMESITE, // ✅ Use 'lax' for localhost
     maxAge: 7 * 24 * 60 * 60 * 1000
   }
 };
