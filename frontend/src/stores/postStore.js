@@ -7,6 +7,7 @@ export const usePostStore = defineStore('posts', () => {
   const isLoading = ref(false)
   const error = ref(null)
 
+  // Obtener todos los posts del feed (similar a userStore.fetchCurrentUser)
   async function fetchFeed() {
     if (isLoading.value) return
 
@@ -16,6 +17,7 @@ export const usePostStore = defineStore('posts', () => {
     try {
       const response = await backend.get('/api/posts/feed')
       posts.value = response.data?.posts ?? []
+      console.log(`✅ Feed cargado: ${posts.value.length} posts`)
     } catch (err) {
       console.error('Error fetching feed:', err)
       error.value = err.response?.data?.message || 'No se pudo cargar el feed'

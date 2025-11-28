@@ -1,5 +1,7 @@
 const sequelize = require('../config/database');
 const User = require('./user');
+const Post = require('./post');
+const UserPost = require('./userPost');
 
 // Define model associations here if needed
 // Example:
@@ -29,5 +31,7 @@ async function initializeDatabase() {
 module.exports = {
   sequelize,
   User,
+  Post,
+  UserPost,
   initializeDatabase
 };

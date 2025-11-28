@@ -2,6 +2,7 @@ const express = require('express');
 const passport = require('passport');
 const authRoutes = require('./auth');
 const userRoutes = require('./users');
+const postsRoutes = require('./posts');
 const { WebAppStrategy } = require('../config/appid');
 const { findUserById, createUser, serializeUser, mapAppIdUserToDb } = require('../services/userService');
 
@@ -93,6 +94,7 @@ router.get('/',
 // Mount routes
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
+router.use('/posts', postsRoutes);
 
 // Health check endpoint
 router.get('/health', (req, res) => {

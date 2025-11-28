@@ -35,12 +35,8 @@ function formatTimestamp(isoString) {
 }
 
 async function ensureFeedLoaded() {
-  if (!isAuthenticated.value) {
-    postStore.clearFeed()
-    return
-  }
-
   try {
+    // Cargar todos los posts (sin filtrar por usuario)
     await postStore.fetchFeed()
   } catch (err) {
     // el store ya maneja el error y lo expone via error.value
