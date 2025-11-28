@@ -47,8 +47,12 @@ passport.use(webAppStrategy);
 passport.serializeUser((user, cb) => cb(null, user));
 passport.deserializeUser((obj, cb) => cb(null, obj));
 
-// Mount API routes
+// Mount API routes under /api (frontend expects /api/users/me)
 app.use('/api', routes);
+
+// Also expose the auth routes at the root '/auth' so external providers
+// (IBM App ID) that redirect to '/auth/callback' are handled correctly.
+app.use('/auth', require('./routes/auth'));
 
 // 404 handler
 app.use((req, res) => {
