@@ -51,7 +51,7 @@ async function checkAuth() {
   
   try {
     // Try to get current user from backend
-    const response = await backend.get('/users/me');
+    const response = await backend.get('/api/users/me');
     
     if (response.data?.user?.id) {
       isAuthenticated.value = true;
@@ -83,7 +83,7 @@ function redirectToLogin() {
   
   // Redirect to backend login with sendBackTo parameter
   // After successful login, user will be redirected back to protected-test
-  window.location.href = `http://localhost:3000/auth/login?sendBackTo=${encodeURIComponent(sendBackTo)}`;
+  window.location.href = `http://localhost:3000/api/auth/login?sendBackTo=${encodeURIComponent(sendBackTo)}`;
 }
 
 onMounted(() => {

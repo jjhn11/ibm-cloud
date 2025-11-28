@@ -1,5 +1,5 @@
 const sequelize = require('../config/database');
-const User = require('./User');
+const User = require('./user');
 
 // Define model associations here if needed
 // Example:

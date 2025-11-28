@@ -113,7 +113,7 @@ async function fetchUserData() {
   error.value = null;
 
   try {
-    const response = await backend.get('/users/me');
+    const response = await backend.get('/api/users/me');
     
     if (response.data?.user) {
       user.value = response.data.user;
@@ -148,7 +148,7 @@ function formatDate(dateString) {
 // Logout function
 async function logout() {
   try {
-    await backend.get('/auth/logout');
+    await backend.get('/api/auth/logout');
     // Redirect to unprotected test page
     router.push('/unprotected-test');
   } catch (err) {

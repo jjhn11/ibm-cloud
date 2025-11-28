@@ -48,7 +48,7 @@ passport.serializeUser((user, cb) => cb(null, user));
 passport.deserializeUser((obj, cb) => cb(null, obj));
 
 // Mount API routes
-app.use('/', routes);
+app.use('/api', routes);
 
 // 404 handler
 app.use((req, res) => {
