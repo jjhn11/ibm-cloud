@@ -160,15 +160,33 @@ router.get('/success',
 /**
  * Logout endpoint
  */
-router.get('/logout', requireAuth, (req, res) => {
-  const userId = req.session.dbUserId;
+router.get('/logout', (req, res) => {
+  const userId = req.session?.dbUserId || 'unknown';
   
-  req._sessionManager = false;
-  WebAppStrategy.logout(req);
-  res.clearCookie('sid');
-  
-  console.log('✅ User logged out:', userId);
-  return res.json({ message: 'Logged out successfully' });
+  try {
+    // Clear session manager flag
+    req._sessionManager = false;
+    
+    // Use IBM App ID logout
+    WebAppStrategy.logout(req);
+    
+    // Clear session cookie
+    res.clearCookie('sid');
+    
+    // Destroy session
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('❌ Error destroying session:', err);
+      }
+    });
+    
+    console.log('✅ User logged out:', userId);
+    return res.json({ message: 'Logged out successfully' });
+  } catch (error) {
+    console.error('❌ Error during logout:', error);
+    // Return success anyway to allow frontend to clear state
+    return res.json({ message: 'Logged out successfully' });
+  }
 });
 
 /**

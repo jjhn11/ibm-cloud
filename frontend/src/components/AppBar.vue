@@ -1,16 +1,26 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/userStore';
+import { usePostStore } from '@/stores/postStore';
 import { computed } from 'vue';
 
 const userStore = useUserStore();
+const postStore = usePostStore();
 const router = useRouter();
 
 const userProfile = computed(() => userStore.user);
 
 async function logout() {
-  await userStore.logout();
-  router.push({ name: 'login' });
+  try {
+    await userStore.logout();
+    postStore.clearFeed();
+    console.log('✅ Sesión cerrada, redirigiendo a login...');
+    router.push({ name: 'login' });
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error);
+    // Redirigir a login de todas formas
+    router.push({ name: 'login' });
+  }
 }
 
 function navigateTo(route) {

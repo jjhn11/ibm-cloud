@@ -44,7 +44,7 @@ export const useUserStore = defineStore("user", () => {
     // Funcion para cerrar sesión
     async function logout() {
         try {
-            await backend.post('/api/auth/logout');
+            await backend.get('/api/auth/logout');
             user.value = {
                 id: null,
                 firstName: null,
@@ -54,8 +54,19 @@ export const useUserStore = defineStore("user", () => {
                 photoUrl: null,
                 bio: null
             };
+            console.log('✅ Sesión cerrada correctamente');
         } catch (error) {
             console.error("Error logging out user:", error);
+            // Limpiar el estado local incluso si falla la petición
+            user.value = {
+                id: null,
+                firstName: null,
+                lastName: null,
+                email: null,
+                phone: null,
+                photoUrl: null,
+                bio: null
+            };
         }
     }
 
